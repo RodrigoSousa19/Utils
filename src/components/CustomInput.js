@@ -16,6 +16,7 @@ export default function CustomInput({
   value,
   keyboardType = 'default',
   readOnly = false,
+  type = 'default'
 }) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -28,6 +29,14 @@ export default function CustomInput({
     setIsFocused(false);
   };
 
+  const handleInputChange = (text) => {
+    if (type === 'money') {
+        const cleanValue = text.replace(/[^\d.,]/g, '');
+      onChangeText(cleanValue);
+    } else {
+      onChangeText(text);
+    }
+  };
 
   const borderStyle = {
     borderBottomColor: isFocused ? theme.colors.primary : theme.colors.border,
@@ -49,8 +58,8 @@ export default function CustomInput({
           placeholder={placeholder}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onChangeText={onChangeText}
-          value={value}
+          onChangeText={handleInputChange}
+          value={type === 'money' ? `R$ ${value}` : value}
           keyboardType={keyboardType}
           placeholderTextColor={theme.colors.placeholder}
           readOnly={readOnly}

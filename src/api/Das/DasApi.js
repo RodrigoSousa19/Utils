@@ -10,6 +10,10 @@ export default class DasApi {
         return ApiService.get(`Das/${id}`);
     }
 
+    static async getCurrentDasRange(salarioBrutoAnual){
+        return ApiService.get(`Das/faixaatual/${salarioBrutoAnual}`);
+    }
+
     static async createDas(data) {
         return ApiService.post('Das', data);
     }
