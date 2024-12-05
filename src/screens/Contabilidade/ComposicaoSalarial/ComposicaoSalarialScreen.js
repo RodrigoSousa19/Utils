@@ -40,7 +40,7 @@ export default function ComposicaoSalarialScreen() {
           inicioPeriodo: moment(data.inicioPeriodo).format("DD/MM/YYYY"),
           fimPeriodo: moment(data.fimPeriodo).format("DD/MM/YYYY"),
           quantidadeDias: data.quantidadeDiasUteis,
-          salarioHora: data.salarioHora,
+          salarioHora: data.salarioHora.toString().replace(".", ","),
           salarioDia: data.salarioDia,
           salarioBruto: data.salarioBruto,
           das: data.das,
@@ -110,7 +110,7 @@ export default function ComposicaoSalarialScreen() {
 
     const diasUteis = totalDiasPeriodo - feriados;
 
-    calculaSalarioEEncargos(diasUteis);
+    await calculaSalarioEEncargos(diasUteis);
   };
 
   async function getTotalFeriados() {
@@ -142,18 +142,20 @@ export default function ComposicaoSalarialScreen() {
   }
 
   async function calculaSalarioEEncargos(diasUteis) {
+    
     let salarioDia = parseToNumber(composicaoSalarial.salarioHora) * 8;
     let salarioBruto = salarioDia * diasUteis;
 
+
     let rendaBrutaAnual = salarioBruto * 12;
     let faixaDas = await DasApi.getCurrentDasRange(rendaBrutaAnual);
-
     let das = salarioBruto * faixaDas.aliquota;
     let proLabore = salarioBruto * 0.28;
     let gps = proLabore * 0.11;
 
     let mensalidadeContabilidade = composicaoSalarial.mensalidadeContabilidade;
     let salarioLiquido = salarioBruto - das - gps - mensalidadeContabilidade;
+    
 
     setComposicaoSalarial((prevState) => ({
       ...prevState,
@@ -165,6 +167,7 @@ export default function ComposicaoSalarialScreen() {
       gps: gps,
       salarioLiquido: salarioLiquido,
     }));
+
   }
 
   return (

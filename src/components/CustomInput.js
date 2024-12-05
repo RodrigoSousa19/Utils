@@ -43,9 +43,13 @@ export default function CustomInput({
     borderBottomWidth: 2,
   };
 
+  const labelStyle = {
+    color: isFocused ? theme.colors.primary : theme.colors.textSecondary
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label,labelStyle]}>{label}</Text>
       <View style={[styles.inputContainer, borderStyle]}>
         <MaterialIcons
           name={iconName}
