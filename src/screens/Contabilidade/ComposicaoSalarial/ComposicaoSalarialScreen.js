@@ -25,7 +25,7 @@ export default function ComposicaoSalarialScreen() {
     inicioPeriodo: "",
     fimPeriodo: "",
     quantidadeDias: 0,
-    salarioHora: "",
+    salarioHora: 0,
     salarioDia: 0,
     salarioBruto: 0,
     das: 0,
@@ -46,7 +46,7 @@ export default function ComposicaoSalarialScreen() {
           inicioPeriodo: moment(result.data.inicioPeriodo).format("DD/MM/YYYY"),
           fimPeriodo: moment(result.data.fimPeriodo).format("DD/MM/YYYY"),
           quantidadeDias: result.data.quantidadeDiasUteis,
-          salarioHora: transformarEmMoeda(result.data.salarioHora),
+          salarioHora: result.data.salarioHora,
           salarioDia: result.data.salarioDia,
           salarioBruto: result.data.salarioBruto,
           das: result.data.das,
@@ -151,12 +151,15 @@ export default function ComposicaoSalarialScreen() {
   }
 
   async function calculaSalarioEEncargos(diasUteis) {
-    let salarioDia = parseToNumber(composicaoSalarial.salarioHora) * 8;
-    let salarioBruto = salarioDia * diasUteis;
 
+    let salarioHora = parseFloat(composicaoSalarial.salarioHora)
+
+    let salarioDia = salarioHora * 8;
+    let salarioBruto = salarioDia * diasUteis;
     let rendaBrutaAnual = salarioBruto * 12;
+
     let faixaDas = await DasApi.getCurrentDasRange(rendaBrutaAnual);
-    let das = salarioBruto * faixaDas.aliquota;
+    let das = salarioBruto * faixaDas.data.aliquota;
     let proLabore = salarioBruto * 0.28;
     let gps = proLabore * 0.11;
 
@@ -175,9 +178,9 @@ export default function ComposicaoSalarialScreen() {
     }));
   }
 
-  const handleCalcular = () => {
+  const handleCalcular = async () => {
     try {
-      Alert.alert("Cálculo realizado com sucesso!");
+       await calcularComposicaoSalarial(composicaoSalarial.inicioPeriodo, composicaoSalarial.fimPeriodo);
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao calcular os valores.");
     }
@@ -185,7 +188,7 @@ export default function ComposicaoSalarialScreen() {
 
   const handleProcessarCompetencia = async () => {
     try {
-      console.log(composicaoSalarial);
+
       const data = {
         id: composicaoSalarial.id,
         inicioPeriodo: moment(
@@ -408,7 +411,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginLeft: 5,
+    marginHorizontal: 5,
     marginBottom: 100,
   },
   input: {

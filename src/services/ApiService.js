@@ -16,8 +16,6 @@ class ApiService {
     try {
       const response = await fetch(`${API_URL}${endpoint}`, options);
 
-      console.log(response);
-
       const result = {
         success: response.ok,
         message: "",
