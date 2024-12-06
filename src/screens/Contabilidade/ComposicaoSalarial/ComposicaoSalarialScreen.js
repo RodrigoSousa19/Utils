@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   Button,
-  Alert
+  Alert,
 } from "react-native";
 import CustomInput from "../../../components/CustomInput";
 import theme from "../../../styles/theme";
@@ -18,6 +18,7 @@ import Utils from "../../../utils/Utils";
 import DasApi from "../../../api/Das/DasApi";
 import { parseToNumber } from "../../../utils/Formats";
 import CustomButton from "../../../components/CustomButton";
+import CheckBox from "expo-checkbox";
 
 export default function ComposicaoSalarialScreen() {
   const [composicaoSalarial, setComposicaoSalarial] = useState({
@@ -34,6 +35,11 @@ export default function ComposicaoSalarialScreen() {
     mensalidadeContabilidade: 0,
     salarioLiquido: 0,
     composicaoAtual: false,
+  });
+
+  const [camposHabilitadosParaEdicao, setCampoHabilitadoParaEdicao] = useState({
+    inicioPeriodo: false,
+    fimPeriodo: false,
   });
 
   useEffect(() => {
@@ -102,10 +108,6 @@ export default function ComposicaoSalarialScreen() {
     calcularComposicaoSalarial(novoInicioPeriodo, novoFimPeriodo);
   };
 
-  const transformarEmMoeda = (value) => {
-    return `R$ ${parseFloat(value).toFixed(2).replace(".", ",")}`;
-  };
-
   const calcularComposicaoSalarial = async (
     dataInicioCompetencia,
     dataFimCompetencia
@@ -151,8 +153,7 @@ export default function ComposicaoSalarialScreen() {
   }
 
   async function calculaSalarioEEncargos(diasUteis) {
-
-    let salarioHora = parseFloat(composicaoSalarial.salarioHora)
+    let salarioHora = parseFloat(composicaoSalarial.salarioHora);
 
     let salarioDia = salarioHora * 8;
     let salarioBruto = salarioDia * diasUteis;
@@ -180,7 +181,10 @@ export default function ComposicaoSalarialScreen() {
 
   const handleCalcular = async () => {
     try {
-       await calcularComposicaoSalarial(composicaoSalarial.inicioPeriodo, composicaoSalarial.fimPeriodo);
+      await calcularComposicaoSalarial(
+        composicaoSalarial.inicioPeriodo,
+        composicaoSalarial.fimPeriodo
+      );
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao calcular os valores.");
     }
@@ -200,7 +204,7 @@ export default function ComposicaoSalarialScreen() {
         ),
         quantidadeDiasUteis: composicaoSalarial.quantidadeDias,
         salarioHora: parseFloat(
-          composicaoSalarial.salarioHora.replace(",", ".").replace("R$ ", "")
+          composicaoSalarial.salarioHora
         ),
         salarioDia: composicaoSalarial.salarioDia,
         salarioBruto: composicaoSalarial.salarioBruto,
@@ -229,32 +233,67 @@ export default function ComposicaoSalarialScreen() {
   return (
     <View style={styles.screen}>
       <ScrollView style={styles.container}>
-        <CustomInput
-          label="Inicio Período"
-          value={composicaoSalarial.inicioPeriodo}
-          onChangeText={(text) =>
-            setComposicaoSalarial((prevState) => ({
-              ...prevState,
-              inicioPeriodo: text,
-            }))
-          }
-          readOnly={true}
-          style={styles.input}
-          iconName="calendar-month"
-        />
-        <CustomInput
-          label="Fim Período"
-          value={composicaoSalarial.fimPeriodo}
-          onChangeText={(text) =>
-            setComposicaoSalarial((prevState) => ({
-              ...prevState,
-              fimPeriodo: text,
-            }))
-          }
-          readOnly={true}
-          style={styles.input}
-          iconName="calendar-month"
-        />
+        <View style={styles.inputContainer}>
+          <View style={styles.input}>
+            <CustomInput
+              label="Inicio Período"
+              value={composicaoSalarial.inicioPeriodo}
+              onChangeText={(text) =>
+                setComposicaoSalarial((prevState) => ({
+                  ...prevState,
+                  inicioPeriodo: text,
+                }))
+              }
+              readOnly={!camposHabilitadosParaEdicao.inicioPeriodo}
+              iconName="calendar-month"
+            />
+          </View>
+          <View style={styles.checkboxContainer}>
+            <CheckBox
+              value={camposHabilitadosParaEdicao.inicioPeriodo}
+              onValueChange={(checked) =>
+                setCampoHabilitadoParaEdicao((prevState) => ({
+                  ...prevState,
+                  inicioPeriodo: checked,
+                }))
+              }
+              style={{ marginRight: 5 }}
+            />
+            <Text>Editar</Text>
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <View style={styles.input}>
+            <CustomInput
+              label="Fim Período"
+              value={composicaoSalarial.fimPeriodo}
+              onChangeText={(text) =>
+                setComposicaoSalarial((prevState) => ({
+                  ...prevState,
+                  fimPeriodo: text,
+                }))
+              }
+              readOnly={!camposHabilitadosParaEdicao.fimPeriodo}
+              style={styles.input}
+              iconName="calendar-month"
+            />
+          </View>
+          <View style={styles.checkboxContainer}>
+            <CheckBox
+              value={camposHabilitadosParaEdicao.fimPeriodo}
+              onValueChange={(checked) =>
+                setCampoHabilitadoParaEdicao((prevState) => ({
+                  ...prevState,
+                  fimPeriodo: checked,
+                }))
+              }
+              style={{ marginRight: 5 }}
+            />
+            <Text>Editar</Text>
+          </View>
+        </View>
+
         <CustomInput
           label="Quantidade de Dias"
           value={composicaoSalarial.quantidadeDias.toString()}
@@ -283,7 +322,7 @@ export default function ComposicaoSalarialScreen() {
 
         <CustomInput
           label="Salário Hora"
-          value={composicaoSalarial.salarioHora}
+          value={Utils.transformarEmMoeda(composicaoSalarial.salarioHora)}
           onChangeText={(text) =>
             setComposicaoSalarial((prevState) => ({
               ...prevState,
@@ -297,7 +336,7 @@ export default function ComposicaoSalarialScreen() {
         />
         <CustomInput
           label="Salário Dia"
-          value={transformarEmMoeda(composicaoSalarial.salarioDia)}
+          value={Utils.transformarEmMoeda(composicaoSalarial.salarioDia)}
           onChangeText={(text) =>
             setComposicaoSalarial((prevState) => ({
               ...prevState,
@@ -310,7 +349,7 @@ export default function ComposicaoSalarialScreen() {
         />
         <CustomInput
           label="Salário Bruto (Mês)"
-          value={transformarEmMoeda(composicaoSalarial.salarioBruto)}
+          value={Utils.transformarEmMoeda(composicaoSalarial.salarioBruto)}
           onChangeText={(text) =>
             setComposicaoSalarial((prevState) => ({
               ...prevState,
@@ -324,7 +363,7 @@ export default function ComposicaoSalarialScreen() {
 
         <CustomInput
           label="DAS"
-          value={transformarEmMoeda(composicaoSalarial.das)}
+          value={Utils.transformarEmMoeda(composicaoSalarial.das)}
           onChangeText={(text) =>
             setComposicaoSalarial((prevState) => ({ ...prevState, das: text }))
           }
@@ -334,7 +373,7 @@ export default function ComposicaoSalarialScreen() {
         />
         <CustomInput
           label="GPS"
-          value={transformarEmMoeda(composicaoSalarial.gps)}
+          value={Utils.transformarEmMoeda(composicaoSalarial.gps)}
           onChangeText={(text) =>
             setComposicaoSalarial((prevState) => ({ ...prevState, gps: text }))
           }
@@ -344,7 +383,7 @@ export default function ComposicaoSalarialScreen() {
         />
         <CustomInput
           label="Pró Labore"
-          value={transformarEmMoeda(composicaoSalarial.proLabore)}
+          value={Utils.transformarEmMoeda(composicaoSalarial.proLabore)}
           onChangeText={(text) =>
             setComposicaoSalarial((prevState) => ({
               ...prevState,
@@ -358,7 +397,7 @@ export default function ComposicaoSalarialScreen() {
 
         <CustomInput
           label="Mensalidade Contabilidade"
-          value={transformarEmMoeda(
+          value={Utils.transformarEmMoeda(
             composicaoSalarial.mensalidadeContabilidade
           )}
           onChangeText={(text) =>
@@ -372,7 +411,7 @@ export default function ComposicaoSalarialScreen() {
         />
         <CustomInput
           label="Salário Liquido"
-          value={transformarEmMoeda(composicaoSalarial.salarioLiquido)}
+          value={Utils.transformarEmMoeda(composicaoSalarial.salarioLiquido)}
           onChangeText={(text) =>
             setComposicaoSalarial((prevState) => ({
               ...prevState,
@@ -416,6 +455,7 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 10,
+    flex: 3,
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -445,5 +485,16 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 8,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 10,
+    flex: 1,
   },
 });

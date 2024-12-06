@@ -39,8 +39,8 @@ export default function CustomInput({
   };
 
   const borderStyle = {
-    borderBottomColor: isFocused ? theme.colors.primary : theme.colors.border,
-    borderBottomWidth: 2,
+    borderColor: isFocused ? theme.colors.primary : theme.colors.border,
+    borderWidth: 1,
   };
 
   const labelStyle = {
@@ -50,7 +50,7 @@ export default function CustomInput({
   return (
     <View style={styles.container}>
       <Text style={[styles.label,labelStyle]}>{label}</Text>
-      <View style={[styles.inputContainer, borderStyle]}>
+      <View style={[styles.inputContainer, borderStyle,{backgroundColor: readOnly ? theme.colors.backgroundDark : theme.colors.white}]}>
         <MaterialIcons
           name={iconName}
           size={20}
@@ -58,12 +58,12 @@ export default function CustomInput({
           style={styles.icon}
         />
         <TextInput
-          style={styles.input}
+          style={[styles.input,{backgroundColor: readOnly ? theme.colors.backgroundDark : theme.colors.white}]}
           placeholder={placeholder}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChangeText={handleInputChange}
-          value={type === 'money' ? `R$ ${value}` : value}
+          value={value}
           keyboardType={keyboardType}
           placeholderTextColor={theme.colors.placeholder}
           readOnly={readOnly}
@@ -95,9 +95,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   input: {
-    flex: 1,
     fontSize: 16,
     color: theme.colors.textPrimary,
-    backgroundColor: theme.colors.backgroundDark,
   },
 });
