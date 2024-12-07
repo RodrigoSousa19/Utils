@@ -1,26 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Button,
   Alert,
+  RefreshControl
 } from "react-native";
 import CustomInput from "../../../components/CustomInput";
 import theme from "../../../styles/theme";
 import ComposicaoSalarialApi from "../../../api/ComposicaoSalarial/ComposicaoSalarialApi";
-import moment, { duration } from "moment";
+import moment from "moment";
 import { MaterialIcons } from "@expo/vector-icons";
 import FeriadosApi from "../../../api/Feriados/FeriadosApi";
 import Utils from "../../../utils/Utils";
 import DasApi from "../../../api/Das/DasApi";
-import { parseToNumber } from "../../../utils/Formats";
 import CustomButton from "../../../components/CustomButton";
 import CheckBox from "expo-checkbox";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ComposicaoSalarialScreen() {
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const [composicaoSalarial, setComposicaoSalarial] = useState({
     id: 0,
     inicioPeriodo: "",
@@ -42,32 +45,45 @@ export default function ComposicaoSalarialScreen() {
     fimPeriodo: false,
   });
 
-  useEffect(() => {
-    const loadComposicaoSalarial = async () => {
-      try {
-        const result = await ComposicaoSalarialApi.GetComposicaoSalarialAtual();
+  const loadComposicaoSalarial = async () => {
+    try {
+      const result = await ComposicaoSalarialApi.GetComposicaoSalarialAtual();
 
-        setComposicaoSalarial({
-          id: result.data.id,
-          inicioPeriodo: moment(result.data.inicioPeriodo).format("DD/MM/YYYY"),
-          fimPeriodo: moment(result.data.fimPeriodo).format("DD/MM/YYYY"),
-          quantidadeDias: result.data.quantidadeDiasUteis,
-          salarioHora: result.data.salarioHora,
-          salarioDia: result.data.salarioDia,
-          salarioBruto: result.data.salarioBruto,
-          das: result.data.das,
-          gps: result.data.gps,
-          proLabore: result.data.proLabore,
-          mensalidadeContabilidade: result.data.mensalidadeContabilidade,
-          salarioLiquido: result.data.salarioBruto,
-          composicaoAtual: result.data.composicaoAtual,
-        });
-      } catch (error) {
-        console.error("Erro ao buscar dados da API:", error);
-      }
-    };
+      setComposicaoSalarial({
+        id: result.data.id,
+        inicioPeriodo: moment(result.data.inicioPeriodo).format("DD/MM/YYYY"),
+        fimPeriodo: moment(result.data.fimPeriodo).format("DD/MM/YYYY"),
+        quantidadeDias: result.data.quantidadeDiasUteis,
+        salarioHora: result.data.salarioHora,
+        salarioDia: result.data.salarioDia,
+        salarioBruto: result.data.salarioBruto,
+        das: result.data.das,
+        gps: result.data.gps,
+        proLabore: result.data.proLabore,
+        mensalidadeContabilidade: result.data.mensalidadeContabilidade,
+        salarioLiquido: result.data.salarioBruto,
+        composicaoAtual: result.data.composicaoAtual,
+      });
+    } catch (error) {
+      console.error("Erro ao buscar dados da API:", error);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadComposicaoSalarial();
+    }, [])
+  );
+
+  const onRefresh = React.useCallback(() => {
+        
+    setRefreshing(true);
 
     loadComposicaoSalarial();
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
   }, []);
 
   const handleAvancarMes = () => {
@@ -192,7 +208,6 @@ export default function ComposicaoSalarialScreen() {
 
   const handleProcessarCompetencia = async () => {
     try {
-
       const data = {
         id: composicaoSalarial.id,
         inicioPeriodo: moment(
@@ -203,9 +218,7 @@ export default function ComposicaoSalarialScreen() {
           "YYYY-MM-DD"
         ),
         quantidadeDiasUteis: composicaoSalarial.quantidadeDias,
-        salarioHora: parseFloat(
-          composicaoSalarial.salarioHora
-        ),
+        salarioHora: parseFloat(composicaoSalarial.salarioHora),
         salarioDia: composicaoSalarial.salarioDia,
         salarioBruto: composicaoSalarial.salarioBruto,
         das: composicaoSalarial.das,
@@ -232,7 +245,7 @@ export default function ComposicaoSalarialScreen() {
 
   return (
     <View style={styles.screen}>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View style={styles.inputContainer}>
           <View style={styles.input}>
             <CustomInput

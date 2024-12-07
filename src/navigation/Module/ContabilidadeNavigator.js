@@ -14,9 +14,9 @@ export default function ContabilidadeNavigator() {
         initialRouteName="Composição Salarial"
         screenOptions={{
           tabBarStyle: { backgroundColor: theme.colors.primary }, 
-          tabBarActiveTintColor: '#fff', // Cor ativa
-          tabBarInactiveTintColor: '#000', // Cor inativa
-          tabBarIndicatorStyle: { backgroundColor: '#fff' }, // Indicador
+          tabBarActiveTintColor: '#fff',
+          tabBarInactiveTintColor: '#000',
+          tabBarIndicatorStyle: { backgroundColor: '#fff' },
         }}
       >
         <Tab.Screen name="Composição Salarial" component={ComposicaoSalarialScreen} />
