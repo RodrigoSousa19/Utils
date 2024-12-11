@@ -5,8 +5,7 @@ import ExtratoBancarioHeader from "../../../components/CustomCards/ExtratoBancar
 import ExtratoBancarioBody from "../../../components/CustomCards/ExtratoBancario/ExtratoBancarioBody";
 import Card from "../../../components/Card";
 
-export default function ExtratosBancariosScreen({navigation}) {
-
+export default function ExtratosBancariosScreen({ navigation }) {
   const [extratos, setExtratos] = useState({});
 
   const loadExtratosBancarios = async () => {
@@ -37,7 +36,7 @@ export default function ExtratosBancariosScreen({navigation}) {
         agrupados[banco][data][tipoTransacao].push(extrato);
       });
 
-      setExtratos(agrupados); 
+      setExtratos(agrupados);
     } catch (error) {
       console.error("Erro ao buscar dados da API:", error);
     }
@@ -48,7 +47,11 @@ export default function ExtratosBancariosScreen({navigation}) {
   }, []);
 
   const handleCardPress = (banco, data) => {
-   
+    console.log("Card Pressed:", banco, data);
+    const extratoSelecionado = extratos[banco][data];
+    navigation.navigate("DetalhesExtratoBancarioScreen", {
+      extrato: extratoSelecionado,
+    });
   };
 
   return (
@@ -68,7 +71,7 @@ export default function ExtratosBancariosScreen({navigation}) {
                 bodyProps={{
                   transaction: extratos[banco][data],
                 }}
-                onPress={handleCardPress}
+                onPress={handleCardPress(banco,data)}
               />
             ))}
           </View>

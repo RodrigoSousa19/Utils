@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import theme from "../styles/theme";
 
@@ -26,7 +26,7 @@ export default function CustomButton({
       {isLoading ? (
         <ActivityIndicator size="small" color={theme.colors.textPrimary} />
       ) : (
-        <>
+        <View style={styles.content}>
           {iconName && (
             <MaterialIcons
               name={iconName}
@@ -36,7 +36,7 @@ export default function CustomButton({
             />
           )}
           <Text style={[styles.text, textStyle]}>{title}</Text>
-        </>
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -50,14 +50,23 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginVertical: 8,
-    height: 50
+    height: 50,
+  },
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
   icon: {
-    marginRight: 8,
+    position: "static",
+    left: 12,
   },
   text: {
     color: theme.colors.white,
     fontSize: 16,
     fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
   },
 });
