@@ -6,7 +6,7 @@ import Separator from "../../Separator";
 import CustomButton from "../../CustomButton";
 import CustomIconButton from "../../CustomIconButton";
 
-const ExtratoBancarioBody = ({ transactionCount }) => {
+const ExtratoBancarioBody = ({ transactionCount, onButtonVerExtratoPress }) => {
   const truncateDescricao = (description) => {
     if (description.length > 20) {
       return description.substring(0, 20) + "...";
@@ -22,7 +22,7 @@ const ExtratoBancarioBody = ({ transactionCount }) => {
             }
         </View>
         <View style={styles.buttonsContainer}>
-          <CustomButton style={styles.buttonVerExtrato} title={'Ver Extrato'}/>
+          <CustomButton style={styles.buttonVerExtrato} title={'Ver Extrato'} onPress={onButtonVerExtratoPress}/>
           <CustomIconButton style={styles.buttonUpload} iconName={'upload'}/>
         </View>
     </View>

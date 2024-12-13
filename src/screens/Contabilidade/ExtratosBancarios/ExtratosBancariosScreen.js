@@ -5,7 +5,6 @@ import ExtratoBancarioHeader from "../../../components/CustomCards/ExtratoBancar
 import ExtratoBancarioBody from "../../../components/CustomCards/ExtratoBancario/ExtratoBancarioBody";
 import Card from "../../../components/Card";
 import { useFocusEffect } from "@react-navigation/native";
-import theme from "../../../styles/theme";
 
 export default function ExtratosBancariosScreen({ navigation }) {
   const [extratos, setExtratos] = useState([]);
@@ -30,7 +29,7 @@ export default function ExtratosBancariosScreen({ navigation }) {
 
   const handleCardPress = (banco, data) => {
     console.log("Card Pressed:", banco, data);
-    const extratoSelecionado = extratos[banco][data];
+    const extratoSelecionado = extratos
     navigation.navigate("DetalhesExtratoBancarioScreen", {
       extrato: extratoSelecionado,
     });
@@ -51,8 +50,8 @@ export default function ExtratosBancariosScreen({ navigation }) {
                 }}
                 bodyProps={{
                   transactionCount: banco.movimentacoes[0].transacoes.length,
+                  onButtonVerExtratoPress: () => handleCardPress(banco.banco, banco.movimentacoes)
                 }}
-                onPress={() => handleCardPress(banco.banco, bancoIndex)}
               />
             }
           </View>
