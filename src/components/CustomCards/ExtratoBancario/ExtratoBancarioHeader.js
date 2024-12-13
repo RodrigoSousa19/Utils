@@ -1,11 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const ExtratoBancarioHeader = ({ nomeBanco, date }) => {
+const ExtratoBancarioHeader = ({ nomeBanco }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <Text style={styles.title}>{nomeBanco}</Text>
-      <Text style={styles.date}>{date}</Text>
     </View>
   );
 };
@@ -15,14 +14,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
-  },
-  date: {
-    fontSize: 14,
-    color: "#555",
   },
 });
 

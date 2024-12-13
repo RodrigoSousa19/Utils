@@ -12,14 +12,14 @@ const Card = ({
   onPress
 }) => {
   return (
-    <TouchableOpacity  style={[styles.card, cardStyle]} onPress={onPress}>
+    <View  style={[styles.card, cardStyle]} onPress={onPress}>
       <View style={[styles.header, headerStyle]}>
         {HeaderComponent && <HeaderComponent {...headerProps} />}
       </View>
       <View style={[styles.body, bodyStyle]}>
         {BodyComponent && <BodyComponent {...bodyProps} />}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 

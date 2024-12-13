@@ -4,47 +4,29 @@ import ExtratoBancarioApi from "../../../api/ExtratoBancario/ExtratoBancarioApi"
 import ExtratoBancarioHeader from "../../../components/CustomCards/ExtratoBancario/ExtratoBancarioHeader";
 import ExtratoBancarioBody from "../../../components/CustomCards/ExtratoBancario/ExtratoBancarioBody";
 import Card from "../../../components/Card";
+import { useFocusEffect } from "@react-navigation/native";
+import theme from "../../../styles/theme";
 
 export default function ExtratosBancariosScreen({ navigation }) {
-  const [extratos, setExtratos] = useState({});
+  const [extratos, setExtratos] = useState([]);
 
   const loadExtratosBancarios = async () => {
     try {
-      const result = await ExtratoBancarioApi.getAllExtratoBancario();
+      const result = await ExtratoBancarioApi.getExtratosAgrupados();
 
       let extratos = result.data;
 
-      const agrupados = {};
-
-      extratos.forEach((extrato) => {
-        const banco = extrato.nomeBanco;
-        const data = new Date(extrato.dataTransacao).toLocaleDateString();
-        const tipoTransacao = extrato.tipoTransacao;
-
-        if (!agrupados[banco]) {
-          agrupados[banco] = {};
-        }
-
-        if (!agrupados[banco][data]) {
-          agrupados[banco][data] = {};
-        }
-
-        if (!agrupados[banco][data][tipoTransacao]) {
-          agrupados[banco][data][tipoTransacao] = [];
-        }
-
-        agrupados[banco][data][tipoTransacao].push(extrato);
-      });
-
-      setExtratos(agrupados);
+      setExtratos(extratos);
     } catch (error) {
       console.error("Erro ao buscar dados da API:", error);
     }
   };
 
-  useEffect(() => {
-    loadExtratosBancarios();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadExtratosBancarios();
+    }, [])
+  );
 
   const handleCardPress = (banco, data) => {
     console.log("Card Pressed:", banco, data);
@@ -57,23 +39,22 @@ export default function ExtratosBancariosScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {Object.keys(extratos).map((banco, bancoIndex) => (
+        {extratos.map((banco, bancoIndex) => (
           <View key={bancoIndex}>
-            {Object.keys(extratos[banco]).map((data, dataIndex) => (
+            {
               <Card
-                key={dataIndex}
+                key={bancoIndex}
                 header={ExtratoBancarioHeader}
                 body={ExtratoBancarioBody}
                 headerProps={{
-                  nomeBanco: banco,
-                  date: data,
+                  nomeBanco: banco.banco
                 }}
                 bodyProps={{
-                  transaction: extratos[banco][data],
+                  transactionCount: banco.movimentacoes[0].transacoes.length,
                 }}
-                onPress={handleCardPress(banco,data)}
+                onPress={() => handleCardPress(banco.banco, bancoIndex)}
               />
-            ))}
+            }
           </View>
         ))}
       </ScrollView>

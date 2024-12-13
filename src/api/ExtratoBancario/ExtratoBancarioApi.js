@@ -21,4 +21,8 @@ export default class ExtratoBancarioApi {
     static async deleteExtratoBancario(id) {
         return ApiService.delete(`ExtratoBancario/${id}`);
     }
+
+    static async getExtratosAgrupados() {
+        return ApiService.get('ExtratoBancario/agrupados');
+    }
 }

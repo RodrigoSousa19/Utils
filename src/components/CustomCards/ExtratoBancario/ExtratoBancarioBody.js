@@ -3,8 +3,10 @@ import { View, Text, StyleSheet } from "react-native";
 import Utils from "../../../utils/Utils";
 import theme from "../../../styles/theme";
 import Separator from "../../Separator";
+import CustomButton from "../../CustomButton";
+import CustomIconButton from "../../CustomIconButton";
 
-const ExtratoBancarioBody = ({ transaction }) => {
+const ExtratoBancarioBody = ({ transactionCount }) => {
   const truncateDescricao = (description) => {
     if (description.length > 20) {
       return description.substring(0, 20) + "...";
@@ -13,49 +15,46 @@ const ExtratoBancarioBody = ({ transaction }) => {
   };
 
   return (
-    <View>
-      {Object.keys(transaction).map((tipo, index) => (
-        <View key={index}>
-          {transaction[tipo].map((transaction, idx) => (
-            <View key={idx} style={styles.transaction}>
-              <Text style={styles.description}>
-                {truncateDescricao(transaction.descricao)}
-              </Text>
-              <Text
-                style={[
-                  styles.amount,
-                  {
-                    color:
-                      transaction.tipoTransacao === "Crédito"
-                        ? theme.colors.success
-                        : theme.colors.error,
-                  },
-                ]}
-              >{`${transaction.tipoTransacao} ${Utils.transformarEmMoeda(
-                transaction.valorTransacao
-              )}`}</Text>
-            </View>
-          ))}
+    <View style={styles.container}>
+        <View style={styles.transactionsCountContainer}>
+            {
+              <Text style={styles.transactionsCount}>{transactionCount} Transações</Text>
+            }
         </View>
-      ))}
+        <View style={styles.buttonsContainer}>
+          <CustomButton style={styles.buttonVerExtrato} title={'Ver Extrato'}/>
+          <CustomIconButton style={styles.buttonUpload} iconName={'upload'}/>
+        </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  transaction: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  container:{
+    flex: "row",
+    justifyContent: "space-around",
     paddingVertical: 5,
     marginBottom: 5,
   },
-  description: {
-    fontSize: 14,
-    color: "#333",
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical: 5,
+    marginBottom: 5,
   },
-  amount: {
-    fontSize: 14,
+  transactionsCount: {
+    fontSize: 22,
     fontWeight: "bold",
+    alignSelf: "center"
+  },
+  buttonVerExtrato: {
+    width: 140,
+    height: 50,
+  },
+  buttonUpload: {
+    width: 50,
+    height: 50,
   },
 });
 
