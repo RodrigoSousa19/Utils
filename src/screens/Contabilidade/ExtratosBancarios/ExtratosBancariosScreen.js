@@ -27,9 +27,8 @@ export default function ExtratosBancariosScreen({ navigation }) {
     }, [])
   );
 
-  const handleCardPress = (banco, data) => {
-    console.log("Card Pressed:", banco, data);
-    const extratoSelecionado = extratos
+  const handleCardPress = (banco) => {
+    const extratoSelecionado = extratos[banco]
     navigation.navigate("DetalhesExtratoBancarioScreen", {
       extrato: extratoSelecionado,
     });
@@ -49,8 +48,9 @@ export default function ExtratosBancariosScreen({ navigation }) {
                   nomeBanco: banco.banco
                 }}
                 bodyProps={{
-                  transactionCount: banco.movimentacoes[0].transacoes.length,
-                  onButtonVerExtratoPress: () => handleCardPress(banco.banco, banco.movimentacoes)
+                  transactionCount: banco.movimentacoes.reduce((total, movimentacao) => 
+                    total + movimentacao.transacoes.length, 0),
+                  onButtonVerExtratoPress: () => handleCardPress(bancoIndex)
                 }}
               />
             }
