@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
-import { MaterialIcons } from '@expo/vector-icons'; // ou qualquer outra biblioteca de ícones que você esteja usando
+import { MaterialIcons } from '@expo/vector-icons';
 import theme from "../styles/theme";
 
 const CustomIconButton = ({ iconName, onPress, size = 24, color = "white" }) => {

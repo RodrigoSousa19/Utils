@@ -1,4 +1,5 @@
 import { API_URL } from "@env";
+import axios from 'axios';
 
 class ApiService {
   static async request(method, endpoint, body = null) {
@@ -41,6 +42,47 @@ class ApiService {
       return {
         success: false,
         message: error.message || "Erro inesperado",
+      };
+    }
+  }
+
+  static async fileRequest(method, endpoint, body) {
+    const formData = new FormData();
+    formData.append("file", body);
+
+    console.log(formData);
+
+    try {
+      console.log(`cURL equivalente:
+          curl -X ${method} "${API_URL}${endpoint}" \\
+            -H "Content-Type: multipart/form-data" \\
+            --form 'file=@${body.name || "arquivo"}'
+        `);
+
+      const response = await axios({
+        method: method,
+        url: `${API_URL}${endpoint}`,
+        data: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const result = {
+        success: true,
+        message: "Arquivo enviado com sucesso.",
+        data: response.data,
+      };
+
+      console.log("Resposta da API:", result);
+      return result;
+    } catch (error) {
+      console.error("Erro ao enviar arquivo:", error.response || error);
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || error.message || "Erro inesperado",
       };
     }
   }
