@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import moment from "moment";
+import Utils from "../../../../utils/Utils";
+import theme from "../../../../styles/theme";
 
 const DetalhesExtratoScreen = ({ route }) => {
   const extrato = route.params.extrato ? route.params.extrato : null;
@@ -104,10 +106,9 @@ const DetalhesExtratoScreen = ({ route }) => {
                     <Text style={styles.transactionDescription}>
                       {transacao.descricao}
                     </Text>
-                    <Text style={styles.transactionValue}>
-                      R$ {transacao.valor.toFixed(2)}
+                    <Text style={[styles.transactionValue, {color: transacao.tipo === 'Crédito' ? theme.colors.success : theme.colors.error}]}>
+                      {Utils.transformarEmMoedaComTipoTransacao(transacao.valor, transacao.tipo)}
                     </Text>
-                    <View style={styles.separator} />
                   </View>
                 ))}
               </View>
