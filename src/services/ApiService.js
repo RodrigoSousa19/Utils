@@ -1,17 +1,16 @@
 import { API_URL } from "@env";
-import axios from 'axios';
+import axios from "axios";
 
 class ApiService {
-  static async request(method, endpoint, body = null) {
+  static async request(method, endpoint, body = null, type = "default") {
     const options = {
       method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
     };
 
     if (body) {
-      options.body = JSON.stringify(body);
+      if (type === "default") {
+        options.body = JSON.stringify(body);
+      } else options.body = body;
     }
 
     try {
@@ -47,22 +46,11 @@ class ApiService {
   }
 
   static async fileRequest(method, endpoint, body) {
-    const formData = new FormData();
-    formData.append("file", body);
-
-    console.log(formData);
-
     try {
-      console.log(`cURL equivalente:
-          curl -X ${method} "${API_URL}${endpoint}" \\
-            -H "Content-Type: multipart/form-data" \\
-            --form 'file=@${body.name || "arquivo"}'
-        `);
-
       const response = await axios({
         method: method,
         url: `${API_URL}${endpoint}`,
-        data: JSON.stringify(formData),
+        data: body,
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -74,11 +62,8 @@ class ApiService {
         data: response.data,
       };
 
-      console.log("Resposta da API:", result);
       return result;
     } catch (error) {
-      console.error("Erro ao enviar arquivo:", error.response || error);
-
       return {
         success: false,
         message:

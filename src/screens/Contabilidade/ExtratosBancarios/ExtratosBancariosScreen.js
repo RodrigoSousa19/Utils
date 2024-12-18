@@ -48,18 +48,18 @@ export default function ExtratosBancariosScreen({ navigation }) {
   const handleSelectFile = async () => {
     try {
       const res = await DocumentPicker.getDocumentAsync({
-        type: "application/octet-stream",
+        copyToCacheDirectory: true,
       });
 
       if (!res.canceled) {
         const file = res.assets[0];
         
-        console.log(file)
-
         if (file && file.uri) {
           const response = await ExtratoBancarioApi.sendBankStatement(file.uri, file.name);
+          
           if (response.success) {
             console.log("Arquivo enviado com sucesso:", response.data);
+            await loadExtratosBancarios();
           } else {
             console.error("Erro ao enviar arquivo:", response.message);
           }
@@ -95,6 +95,7 @@ export default function ExtratosBancariosScreen({ navigation }) {
                       0
                     ),
                     onButtonVerExtratoPress: () => handleCardPress(bancoIndex),
+                    onButtonUploadPress: () => handleSelectFile()
                   }}
                 />
               }
